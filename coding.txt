@@ -1,0 +1,38 @@
+Decisiones y aclaraciones en el codigo:
+
+1. Función convert()
+
+Usamos la función convert porque a pygame le es más fácil trabajar con este tipo de objeto
+que trabajar con una imagen.
+
+2. Función blit()
+
+Pone en pantalla una superficie. Parte del punto 0,0; que es la esquina superior izquierda
+de la pantalla
+
+3. Dimensiones de la pantalla
+
+En el tutorial original las dimensiones de la pantalla eran el doble (574,1024)
+Habia errores que me han llevado a decidir hacerla por la mitad
+En caso de usar la resolución original, para cada imagen habrá que hacer un escalado, ya que
+el tamaño de las imagenes es la mitad de lo que es necesario. Para ello, después de
+importarlas hay que escribir la siguiente linea:
+
+variable = pygame.transform.scale2x(variable)
+
+4. Posición del suelo respecto el eje y
+
+La posición del suelo respecto al eje y es 450 porque es un valor que me ha parecido correcto
+a la hora del diseño. Si fuera +-20 px hacia arriba o abajo no debería suponer grandes
+problemas, aun que habría que hacer algunas adaptaciones
+
+5. Funciones rect
+
+Tanto el pájaro como las tuberías son rectangulos, no superficies. Esto es debido a que
+hay que controlar las colisiones de estos objetos y esta es la manera de hacerlo. Aun así, también
+tienen una superficie para hacer rotaciones.
+Básicamente lo que hacemos es coger una superfície y añadir un rectángulo a ella
+
+6. Constantes
+
+Las constantes, como p.e. la gravedad, están escritas en mayúsculas
