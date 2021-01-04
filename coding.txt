@@ -36,3 +36,14 @@ Básicamente lo que hacemos es coger una superfície y añadir un rectángulo a 
 6. Constantes
 
 Las constantes, como p.e. la gravedad, están escritas en mayúsculas
+
+
+7. Método extend()
+Usamos el método extend() en las listas cuando pasamos tuplas. La documentación del método
+extend es la siguiente: https://www.w3schools.com/python/ref_list_extend.asp
+
+
+8. Función flip() pygame
+La función flip requiere de tres parámetros: superficie a girar, si gira en el eje de las x, si gira
+en el eje de las y
+Estos dos últimos valores son booleanos
