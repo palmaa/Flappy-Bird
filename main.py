@@ -74,6 +74,30 @@ def comprovar_colision(lista_tuberias, pajaro_rect):
     return False
 
 
+def rotar_pajaro(pajaro, movimiento_pajaro):
+    """
+    Rota al pajaro hacia arriba o hacia abajo según esté cayendo o volando
+    para dar mayor sensacion de movimiento
+    :param pajaro: rect
+    :param movimiento_pajaro: int
+    :return: rect
+    """
+    nuevo_pajaro = pygame.transform.rotozoom(pajaro, -movimiento_pajaro*2, 1)
+    return nuevo_pajaro
+
+
+def animacion_pajaro(lista_pajaros, indice, rect):
+    """
+    Devuelve al pajaro con un aleteo distinto cada vez
+    :param lista_pajaros: [img]
+    :param indice: int
+    :param rect: pajaro_rect
+    :return: superficie, rect
+    """
+    pajaro = lista_pajaros[indice]
+    pajaro_rect = pajaro.get_rect(center = (50, rect.centery))
+    return pajaro, pajaro_rect
+
 
 pygame.init()
 
@@ -90,14 +114,27 @@ suelo = pygame.image.load('assets/base.png').convert()
 x_suelo = 0
 y_suelo = 450
 
-pajaro = pygame.image.load('assets/bluebird-midflap.png').convert()
+#El código está comentado ya que este código es sin animaciones
+#pajaro = pygame.image.load('assets/bluebird-midflap.png').convert_alpha()
 
 """
 Los parámetros de rect son: donde queremos el pajaro respecto al rectángulo
 y dónde ponemos el rectángulo (50, 256); en medio de la pantalla en altura y desplazado
 a la izquierda en anchura.
 """
-pajaro_rect = pajaro.get_rect(center = (50, 256))
+#El código está comentado ya que este código es sin animaciones
+#pajaro_rect = pajaro.get_rect(center = (50, 256))
+
+pajaro_abajo = pygame.image.load('assets/bluebird-downflap.png').convert_alpha()
+pajaro_medio = pygame.image.load('assets/bluebird-midflap.png').convert_alpha()
+pajaro_arriba = pygame.image.load('assets/bluebird-upflap.png').convert_alpha()
+lista_pajaros = [pajaro_abajo, pajaro_medio, pajaro_arriba]
+indice_lista_pajaros = 0
+pajaro = lista_pajaros[indice_lista_pajaros]
+pajaro_rect = pajaro.get_rect(center = (50,256))
+
+aleteo_pajaro = pygame.USEREVENT+1
+pygame.time.set_timer(aleteo_pajaro, 200)
 
 superficie_tuberia = pygame.image.load('assets/pipe-green.png').convert()
 """
@@ -161,6 +198,13 @@ while True:
         if event.type == spawnpipe:
             lista_tuberias.extend(crear_tuberia(altura_tuberias))
 
+        if event.type == aleteo_pajaro:
+            if (indice_lista_pajaros < 2):
+                indice_lista_pajaros += 1
+            else:
+                indice_lista_pajaros = 0
+
+            pajaro, pajaro_rect = animacion_pajaro(lista_pajaros, indice_lista_pajaros, pajaro_rect)
 
     #Dibujamos el background
 
@@ -171,8 +215,9 @@ while True:
         #Dibujamos el pájaro
 
         movimiento_pajaro += GRAVEDAD
+        pajaro_rotado = rotar_pajaro(pajaro, movimiento_pajaro)
         pajaro_rect.centery += movimiento_pajaro
-        screen.blit(pajaro, pajaro_rect)
+        screen.blit(pajaro_rotado, pajaro_rect)
 
         #Comprovamos si hay colision
 
