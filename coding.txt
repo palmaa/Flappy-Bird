@@ -47,3 +47,11 @@ extend es la siguiente: https://www.w3schools.com/python/ref_list_extend.asp
 La función flip requiere de tres parámetros: superficie a girar, si gira en el eje de las x, si gira
 en el eje de las y
 Estos dos últimos valores son booleanos
+
+
+9. Comprovar puntuación
+Comprovar la puntuación es muy complicado, pero se hace de la siguiente manera: cada vez que el
+pájaro se encuentra entre el extremo izquierdo y el derecho de la tubería, se suma uno a su puntuación
+Esto ocurre 17 veces por tubería, y como no se como controlar que solo se sume 1 unidad por
+tubería en vez de 17, lo que hago es que, a la hora de mostrar la puntuación
+por pantalla, se divide esta entre 17, de forma que la muestra correctamente.

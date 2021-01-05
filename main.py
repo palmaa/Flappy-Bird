@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import time
 
 def dibujar_suelo():
     """
@@ -98,17 +99,81 @@ def animacion_pajaro(lista_pajaros, indice, rect):
     pajaro_rect = pajaro.get_rect(center = (50, rect.centery))
     return pajaro, pajaro_rect
 
+def mostrar_puntuacion(puntuacion, estado_juego):
+
+    """
+    Muestra la puntuación por pantalla, haciendole algunos retoques explicados en el
+    punto 9 del archivo coding.txt
+    :param puntuacion: int
+    :param estado_juego: str
+    :return: None
+    """
+
+    if estado_juego == 'Juego_principal':
+        if puntuacion > 0:
+            puntuacion = int((puntuacion)/17)
+        superficie_puntuacion = fuente.render(str(puntuacion), True, (255,255,255))
+        puntuacion_rect = superficie_puntuacion.get_rect(center = (144, 50))
+        screen.blit(superficie_puntuacion, puntuacion_rect)
+
+    if estado_juego == 'Game_over':
+        if puntuacion > 0:
+            puntuacion = int((puntuacion)/17)
+        superficie_puntuacion = fuente.render(f'Score: {puntuacion}', True, (255,255,255))
+        puntuacion_rect = superficie_puntuacion.get_rect(center = (144, 50))
+        screen.blit(superficie_puntuacion, puntuacion_rect)
+        superficie_max_puntuacion = fuente.render(f'High Score: {max_puntuacion}', True, (255,255,255))
+        puntuacion_max_rect = superficie_max_puntuacion.get_rect(center = (144, 425))
+        screen.blit(superficie_max_puntuacion, puntuacion_max_rect)
+
+
+
+
+
+def comprovar_aumento(lista_tuberias, pajaro_rect, puntuacion, puntuacion_comprovada):
+
+    """
+    Comprueva que el pajaro pase por la tubería para aumentar la puntuación
+    :param lista_tuberias: [rect]
+    :param pajaro_rect: rect
+    :param puntuacion: int
+    :param puntuacion_comprovada: bool
+    :return: int
+    """
+
+    for tuberia in lista_tuberias:
+        if puntuacion_comprovada == False:
+            if pajaro_rect.centerx > tuberia.midleft[0] and pajaro_rect.centerx < tuberia.midright[0]:
+                puntuacion_comprovada = True
+                puntuacion += 1
+                return puntuacion
+
+    return puntuacion
+
+
+def actualizar_puntuacion(puntuacion, max_puntuacion):
+    if puntuacion > max_puntuacion:
+        max_puntuacion = puntuacion
+
+    return max_puntuacion
 
 pygame.init()
+
+fuente = pygame.font.Font('04B_19.TTF', 20)
+inicio = time.time()
 
 #Variables del juego
 GRAVEDAD = 0.125
 movimiento_pajaro = 0
+colision = False
+puntuacion = 0
+max_puntuacion = 0
+puntuacion_comprovada = False
 
 screen = pygame.display.set_mode((288,512))
 clock = pygame.time.Clock()
 backgorund = pygame.image.load('assets/background-day.png').convert()
-colision = False
+
 
 suelo = pygame.image.load('assets/base.png').convert()
 x_suelo = 0
@@ -194,6 +259,8 @@ while True:
                 #Resetearemos la posición del pájaro
                 pajaro_rect.center = (50, 256)
                 movimiento_pajaro = 0
+                #Reseteamos puntuacion
+                puntuacion = 0
 
         if event.type == spawnpipe:
             lista_tuberias.extend(crear_tuberia(altura_tuberias))
@@ -227,6 +294,20 @@ while True:
 
         lista_tuberias = mover_tuberias(lista_tuberias)
         dibujar_tuberias(lista_tuberias)
+
+        #Mostramos la puntuación
+        max_puntuacion = int(actualizar_puntuacion(puntuacion, max_puntuacion)/17)
+        mostrar_puntuacion(puntuacion, 'Juego_principal')
+
+        #Comprovaremos si debemos aumentar la puntuación
+        puntuacion = comprovar_aumento(lista_tuberias, pajaro_rect, puntuacion, puntuacion_comprovada)
+
+#TODO: arreglar max puntuacion
+
+    #En caso de que haya colision, mostraremos por pantalla la puntuacion y el record
+    else:
+        max_puntuacion = int(actualizar_puntuacion(puntuacion, max_puntuacion)/17)
+        mostrar_puntuacion(puntuacion, 'Game_over')
 
     #Dibujamos el suelo
 
