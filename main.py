@@ -51,6 +51,30 @@ def dibujar_tuberias(lista_tuberias):
             screen.blit(girar_tuberia, tuberia)
 
 
+def comprovar_colision(lista_tuberias, pajaro_rect):
+    """
+    Comprueva si el pájaro colisiona con la tubería, ya sea la superior
+    o la inferior
+    Además, comprovamos que el jugador no sobrevuele la pantalla ni colisione
+    contra el suelo
+    :param lista_tuberias: [rect]
+    :return: bool
+    """
+
+    #Colision con la tuberia
+    for tuberia in lista_tuberias:
+        if pajaro_rect.colliderect(tuberia):
+            return True
+
+    #Está en la pantalla
+    if pajaro_rect.top <= -100 or pajaro_rect.bottom >= y_suelo:
+        return True
+
+
+    return False
+
+
+
 pygame.init()
 
 #Variables del juego
@@ -60,6 +84,7 @@ movimiento_pajaro = 0
 screen = pygame.display.set_mode((288,512))
 clock = pygame.time.Clock()
 backgorund = pygame.image.load('assets/background-day.png').convert()
+colision = False
 
 suelo = pygame.image.load('assets/base.png').convert()
 x_suelo = 0
@@ -112,7 +137,7 @@ while True:
             sys.exit()
 
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_SPACE and not colision:
                 #Si el jugador la da a una tecla y es el espacio, el pájaro va a saltar
                 """
                 Con la primera linea, conseguimos que al saltar no haya gravedad
@@ -123,6 +148,16 @@ while True:
                 movimiento_pajaro = 0
                 movimiento_pajaro -= 6
 
+            #Si el jugador choca y le da al espacio, resetea el juego
+            if event.key == pygame.K_SPACE and colision:
+                #Haremos que el jugador vuelva a poder jugar
+                colision = False
+                #Eliminaremos las tuberias de la partida anterior
+                lista_tuberias.clear()
+                #Resetearemos la posición del pájaro
+                pajaro_rect.center = (50, 256)
+                movimiento_pajaro = 0
+
         if event.type == spawnpipe:
             lista_tuberias.extend(crear_tuberia(altura_tuberias))
 
@@ -131,16 +166,22 @@ while True:
 
     screen.blit(backgorund, (0,0))
 
-    #Dibujamos el pájaro
+    if not colision:
 
-    movimiento_pajaro += GRAVEDAD
-    pajaro_rect.centery += movimiento_pajaro
-    screen.blit(pajaro, pajaro_rect)
+        #Dibujamos el pájaro
 
-    #Dibujamos la tubería
+        movimiento_pajaro += GRAVEDAD
+        pajaro_rect.centery += movimiento_pajaro
+        screen.blit(pajaro, pajaro_rect)
 
-    lista_tuberias = mover_tuberias(lista_tuberias)
-    dibujar_tuberias(lista_tuberias)
+        #Comprovamos si hay colision
+
+        colision = comprovar_colision(lista_tuberias, pajaro_rect)
+
+        #Dibujamos la tubería
+
+        lista_tuberias = mover_tuberias(lista_tuberias)
+        dibujar_tuberias(lista_tuberias)
 
     #Dibujamos el suelo
 
