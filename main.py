@@ -99,7 +99,7 @@ def animacion_pajaro(lista_pajaros, indice, rect):
     pajaro_rect = pajaro.get_rect(center = (50, rect.centery))
     return pajaro, pajaro_rect
 
-def mostrar_puntuacion(puntuacion, estado_juego):
+def mostrar_puntuacion(puntuacion, estado_juego, max_punt):
 
     """
     Muestra la puntuación por pantalla, haciendole algunos retoques explicados en el
@@ -122,6 +122,7 @@ def mostrar_puntuacion(puntuacion, estado_juego):
         superficie_puntuacion = fuente.render(f'Score: {puntuacion}', True, (255,255,255))
         puntuacion_rect = superficie_puntuacion.get_rect(center = (144, 50))
         screen.blit(superficie_puntuacion, puntuacion_rect)
+        max_puntuacion = actualizar_puntuacion(puntuacion, max_punt)
         superficie_max_puntuacion = fuente.render(f'High Score: {max_puntuacion}', True, (255,255,255))
         puntuacion_max_rect = superficie_max_puntuacion.get_rect(center = (144, 425))
         screen.blit(superficie_max_puntuacion, puntuacion_max_rect)
@@ -130,30 +131,28 @@ def mostrar_puntuacion(puntuacion, estado_juego):
 
 
 
-def comprovar_aumento(lista_tuberias, pajaro_rect, puntuacion, puntuacion_comprovada):
+def comprovar_aumento(lista_tuberias, pajaro_rect, puntuacion):
 
     """
     Comprueva que el pajaro pase por la tubería para aumentar la puntuación
     :param lista_tuberias: [rect]
     :param pajaro_rect: rect
     :param puntuacion: int
-    :param puntuacion_comprovada: bool
     :return: int
     """
 
     for tuberia in lista_tuberias:
-        if puntuacion_comprovada == False:
-            if pajaro_rect.centerx > tuberia.midleft[0] and pajaro_rect.centerx < tuberia.midright[0]:
-                puntuacion_comprovada = True
-                puntuacion += 1
-                return puntuacion
+
+        if pajaro_rect.centerx > tuberia.midleft[0] and pajaro_rect.centerx < tuberia.midright[0]:
+            puntuacion += 1
+            return puntuacion
 
     return puntuacion
 
 
 def actualizar_puntuacion(puntuacion, max_puntuacion):
-    if puntuacion > max_puntuacion:
-        max_puntuacion = puntuacion
+    if int(puntuacion/17) > max_puntuacion:
+        max_puntuacion = (puntuacion/17)
 
     return max_puntuacion
 
@@ -296,18 +295,16 @@ while True:
         dibujar_tuberias(lista_tuberias)
 
         #Mostramos la puntuación
-        max_puntuacion = int(actualizar_puntuacion(puntuacion, max_puntuacion)/17)
-        mostrar_puntuacion(puntuacion, 'Juego_principal')
+        max_puntuacion = int(actualizar_puntuacion(puntuacion, max_puntuacion))
+        mostrar_puntuacion(puntuacion, 'Juego_principal', max_puntuacion)
 
         #Comprovaremos si debemos aumentar la puntuación
-        puntuacion = comprovar_aumento(lista_tuberias, pajaro_rect, puntuacion, puntuacion_comprovada)
+        puntuacion = comprovar_aumento(lista_tuberias, pajaro_rect, puntuacion)
 
-#TODO: arreglar max puntuacion
 
     #En caso de que haya colision, mostraremos por pantalla la puntuacion y el record
     else:
-        max_puntuacion = int(actualizar_puntuacion(puntuacion, max_puntuacion)/17)
-        mostrar_puntuacion(puntuacion, 'Game_over')
+        mostrar_puntuacion(puntuacion, 'Game_over', max_puntuacion)
 
     #Dibujamos el suelo
 
