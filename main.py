@@ -65,6 +65,7 @@ def comprovar_colision(lista_tuberias, pajaro_rect):
     #Colision con la tuberia
     for tuberia in lista_tuberias:
         if pajaro_rect.colliderect(tuberia):
+            sonido_muerte.play()
             return True
 
     #Está en la pantalla
@@ -140,11 +141,14 @@ def comprovar_aumento(lista_tuberias, pajaro_rect, puntuacion):
     :param puntuacion: int
     :return: int
     """
-
+    #sonar = True
     for tuberia in lista_tuberias:
 
         if pajaro_rect.centerx > tuberia.midleft[0] and pajaro_rect.centerx < tuberia.midright[0]:
             puntuacion += 1
+            #if sonar:
+                #sonido_punto.play()
+                #sonar = False
             return puntuacion
 
     return puntuacion
@@ -156,6 +160,9 @@ def actualizar_puntuacion(puntuacion, max_puntuacion):
 
     return max_puntuacion
 
+
+
+pygame.mixer.pre_init(frequency=44100, size=-16, channels=1, buffer=256)
 pygame.init()
 
 fuente = pygame.font.Font('04B_19.TTF', 20)
@@ -226,6 +233,22 @@ escogeremos un valor aleatorio de esta lista
 altura_tuberias = [220, 300, 400]
 
 
+"""
+Imagen que se verá cuando muramos
+"""
+
+game_over = pygame.image.load('assets/message.png').convert_alpha()
+game_over_rect = game_over.get_rect(center = (144,256))
+
+
+"""
+Importamos los sonidos del juego
+"""
+
+sonido_aleteo = pygame.mixer.Sound('sound/sfx_wing.wav')
+sonido_muerte = pygame.mixer.Sound('sound/sfx_hit.wav')
+sonido_punto = pygame.mixer.Sound('sound/sfx_point.wav')
+
 while True:
 
 
@@ -245,7 +268,9 @@ while True:
                 por lo que el salto se puede producir, en caso contrario
                 solo mantendríamos al pajaro contrarrestando la gravedad
                 pero jamás iria hacia arriba
+                Además, sonará el ruidito del aleteo
                 """
+                sonido_aleteo.play()
                 movimiento_pajaro = 0
                 movimiento_pajaro -= 6
 
@@ -304,7 +329,9 @@ while True:
 
     #En caso de que haya colision, mostraremos por pantalla la puntuacion y el record
     else:
+        screen.blit(game_over, game_over_rect)
         mostrar_puntuacion(puntuacion, 'Game_over', max_puntuacion)
+
 
     #Dibujamos el suelo
 
